@@ -1,0 +1,43 @@
+name: Terraform Check
+
+on:
+  pull_request:
+    paths:
+      - "infra/**"
+      - "lambda/**"
+      - "runner/**"
+      - "scenarios/**"
+      - ".github/workflows/terraform-check.yml"
+  push:
+    branches: [main]
+    paths:
+      - "infra/**"
+      - "lambda/**"
+      - "runner/**"
+      - "scenarios/**"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.16.2"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Check Python syntax
+        run: python -m py_compile lambda/worker.py runner/run_test.py
+      - name: Check Terraform formatting
+        run: terraform fmt -check -recursive
+      - name: Initialize without remote backend
+        working-directory: infra/environments/loadtest
+        run: terraform init -backend=false -input=false
+      - name: Validate Terraform
+        working-directory: infra/environments/loadtest
+        run: terraform validate
+

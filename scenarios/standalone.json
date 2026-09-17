@@ -1,0 +1,14 @@
+{
+  "target": "spring",
+  "concurrency": 5,
+  "durationSeconds": 180,
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/load/standalone",
+      "weight": 1,
+      "timeoutSeconds": 10
+    }
+  ]
+}
+

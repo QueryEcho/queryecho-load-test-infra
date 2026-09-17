@@ -1,0 +1,26 @@
+aws_region  = "ap-northeast-2"
+project_name = "queryecho-loadtest"
+environment  = "loadtest"
+
+# First apply: keep these at 0, push images to the output ECR URLs, then set them to 1.
+spring_desired_count    = 0
+java_desired_count      = 0
+collector_desired_count = 0
+
+spring_image_tag = "replace-with-immutable-tag"
+java_image_tag   = "replace-with-immutable-tag"
+collector_image = "ghcr.io/queryecho/queryecho-app:0.2.0"
+
+target_cpu      = 1024
+target_memory   = 2048
+collector_cpu   = 1024
+collector_memory = 2048
+
+mysql_instance_class    = "db.t4g.small"
+postgres_instance_class = "db.t4g.small"
+
+lambda_reserved_concurrency = 10
+lambda_timeout_seconds      = 300
+result_retention_days       = 30
+log_retention_days          = 14
+

@@ -1,0 +1,3 @@
+output "lambda_function_name" { value = aws_lambda_function.worker.function_name }
+output "result_bucket_name" { value = aws_s3_bucket.results.id }
+

@@ -1,0 +1,15 @@
+{
+  "target": "spring",
+  "concurrency": 5,
+  "durationSeconds": 180,
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/load/transaction",
+      "body": { "itemCount": 3 },
+      "weight": 1,
+      "timeoutSeconds": 10
+    }
+  ]
+}
+
