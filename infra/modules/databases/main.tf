@@ -28,7 +28,9 @@ resource "aws_db_instance" "mysql" {
   skip_final_snapshot     = true
   apply_immediately       = true
 
-  performance_insights_enabled = true
+  # db.t4g.small for RDS MySQL does not support Performance Insights.
+  # CloudWatch CPU and connection metrics remain available for the load test.
+  performance_insights_enabled = false
 
   tags = { Name = "${var.name_prefix}-mysql" }
 }
@@ -61,4 +63,3 @@ resource "aws_db_instance" "postgres" {
 
   tags = { Name = "${var.name_prefix}-postgres" }
 }
-

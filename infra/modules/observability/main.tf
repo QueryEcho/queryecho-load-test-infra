@@ -10,6 +10,7 @@ resource "aws_cloudwatch_dashboard" "this" {
         width  = 12
         height = 6
         properties = {
+          region = var.aws_region
           title  = "ECS CPU Utilization"
           view   = "timeSeries"
           stat   = "Average"
@@ -28,6 +29,7 @@ resource "aws_cloudwatch_dashboard" "this" {
         width  = 12
         height = 6
         properties = {
+          region = var.aws_region
           title  = "ECS Memory Utilization"
           view   = "timeSeries"
           stat   = "Average"
@@ -46,6 +48,7 @@ resource "aws_cloudwatch_dashboard" "this" {
         width  = 12
         height = 6
         properties = {
+          region = var.aws_region
           title  = "RDS CPU and Connections"
           view   = "timeSeries"
           stat   = "Average"
@@ -65,6 +68,7 @@ resource "aws_cloudwatch_dashboard" "this" {
         width  = 12
         height = 6
         properties = {
+          region = var.aws_region
           title  = "Lambda Load Workers"
           view   = "timeSeries"
           period = 60
@@ -79,4 +83,3 @@ resource "aws_cloudwatch_dashboard" "this" {
     ]
   })
 }
-

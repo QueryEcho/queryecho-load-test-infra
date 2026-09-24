@@ -12,4 +12,6 @@ terraform.tfvars
 __pycache__/
 *.pyc
 .venv/
-
+local-results/
+destroy-logs/
+*-plan.txt

@@ -1,6 +1,7 @@
 {
   "target": "spring",
   "concurrency": 5,
+  "requestIntervalMs": 1000,
   "durationSeconds": 180,
   "requests": [
     {
@@ -11,4 +12,3 @@
     }
   ]
 }
-

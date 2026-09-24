@@ -50,7 +50,7 @@ def _latency_bucket(elapsed_ms):
     return "gte_5000ms"
 
 
-def _run_lane(base_url, requests, headers, deadline):
+def _run_lane(base_url, requests, headers, deadline, request_interval_ms):
     result = {
         "requests": 0,
         "successes": 0,
@@ -104,6 +104,14 @@ def _run_lane(base_url, requests, headers, deadline):
             result["latencyMaxMs"] = max(result["latencyMaxMs"], elapsed_ms)
             result["histogram"][_latency_bucket(elapsed_ms)] += 1
 
+        # Limit each lane to at most one request start per configured interval.
+        # The response time is included in the interval, so a slow response does
+        # not add an unnecessary extra delay or create a catch-up burst.
+        remaining_interval_seconds = (request_interval_ms - elapsed_ms) / 1000
+        remaining_test_seconds = deadline - time.monotonic()
+        if remaining_interval_seconds > 0 and remaining_test_seconds > 0:
+            time.sleep(min(remaining_interval_seconds, remaining_test_seconds))
+
     return result
 
 
@@ -139,6 +147,7 @@ def handler(event, _context):
     target = str(_required(event, "target"))
     concurrency = int(event.get("concurrency", 1))
     duration_seconds = int(event.get("durationSeconds", 60))
+    request_interval_ms = int(event.get("requestIntervalMs", 0))
     start_at_ms = int(event.get("startAtEpochMs", int(time.time() * 1000)))
     requests = event.get("requests") or [{
         "method": event.get("method", "GET"),
@@ -150,6 +159,8 @@ def handler(event, _context):
         raise ValueError("concurrency must be between 1 and 100")
     if not 1 <= duration_seconds <= 840:
         raise ValueError("durationSeconds must be between 1 and 840")
+    if not 0 <= request_interval_ms <= 60_000:
+        raise ValueError("requestIntervalMs must be between 0 and 60000")
 
     wait_seconds = (start_at_ms - int(time.time() * 1000)) / 1000
     if wait_seconds > 15:
@@ -168,7 +179,14 @@ def handler(event, _context):
     base_url = _target_url(target)
     with concurrent.futures.ThreadPoolExecutor(max_workers=concurrency) as executor:
         futures = [
-            executor.submit(_run_lane, base_url, requests, headers, deadline)
+            executor.submit(
+                _run_lane,
+                base_url,
+                requests,
+                headers,
+                deadline,
+                request_interval_ms,
+            )
             for _ in range(concurrency)
         ]
         merged = _merge([future.result() for future in futures])
@@ -179,6 +197,7 @@ def handler(event, _context):
         "target": target,
         "concurrency": concurrency,
         "durationSeconds": duration_seconds,
+        "requestIntervalMs": request_interval_ms,
         "startedAtEpochMs": int(started_at * 1000),
         "finishedAtEpochMs": int(time.time() * 1000),
         **merged,
@@ -191,4 +210,3 @@ def handler(event, _context):
         ContentType="application/json",
     )
     return {"resultKey": key, **result}
-

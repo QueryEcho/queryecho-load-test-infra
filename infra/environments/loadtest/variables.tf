@@ -3,6 +3,18 @@ variable "aws_region" {
   default = "ap-northeast-2"
 }
 
+variable "aws_profile" {
+  description = "Local AWS CLI profile used by the AWS provider."
+  type        = string
+  default     = null
+}
+
+variable "aws_account_id" {
+  description = "Optional deployment account guardrail. Terraform refuses a different account."
+  type        = string
+  default     = null
+}
+
 variable "project_name" {
   type    = string
   default = "queryecho-loadtest"
@@ -30,10 +42,10 @@ variable "java_image_tag" {
   default     = "latest"
 }
 
-variable "collector_image" {
-  description = "Full QueryEcho image URI. Defaults to the public GHCR image when null."
+variable "collector_image_tag" {
+  description = "Tag already pushed to the QueryEcho Collector ECR repository."
   type        = string
-  default     = "ghcr.io/queryecho/queryecho-app:0.2.0"
+  default     = "latest"
 }
 
 variable "spring_desired_count" {
@@ -82,8 +94,9 @@ variable "postgres_instance_class" {
 }
 
 variable "lambda_reserved_concurrency" {
-  type    = number
-  default = 10
+  description = "Optional dedicated Lambda concurrency. Null uses the account's unreserved pool."
+  type        = number
+  default     = null
 }
 
 variable "lambda_timeout_seconds" {
@@ -100,4 +113,3 @@ variable "log_retention_days" {
   type    = number
   default = 14
 }
-

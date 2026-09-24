@@ -1,4 +1,6 @@
-aws_region  = "ap-northeast-2"
+aws_region     = "ap-northeast-2"
+aws_profile    = "replace-with-local-aws-profile"
+aws_account_id = "replace-with-12-digit-account-id"
 project_name = "queryecho-loadtest"
 environment  = "loadtest"
 
@@ -9,7 +11,7 @@ collector_desired_count = 0
 
 spring_image_tag = "replace-with-immutable-tag"
 java_image_tag   = "replace-with-immutable-tag"
-collector_image = "ghcr.io/queryecho/queryecho-app:0.2.0"
+collector_image_tag = "replace-with-immutable-tag"
 
 target_cpu      = 1024
 target_memory   = 2048
@@ -19,8 +21,7 @@ collector_memory = 2048
 mysql_instance_class    = "db.t4g.small"
 postgres_instance_class = "db.t4g.small"
 
-lambda_reserved_concurrency = 10
+lambda_reserved_concurrency = null
 lambda_timeout_seconds      = 300
 result_retention_days       = 30
 log_retention_days          = 14
-

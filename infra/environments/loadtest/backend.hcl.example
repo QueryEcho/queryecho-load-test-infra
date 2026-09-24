@@ -1,6 +1,6 @@
 bucket       = "replace-with-bootstrap-output"
 key          = "queryecho/loadtest/terraform.tfstate"
 region       = "ap-northeast-2"
+profile      = "replace-with-local-aws-profile"
 use_lockfile = true
 encrypt      = true
-

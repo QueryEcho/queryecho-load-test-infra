@@ -54,6 +54,22 @@ scenarios/                       재현 가능한 테스트 입력
 - Spring/Java/QueryEcho Docker 이미지
 - 비용이 발생하는 리소스: NAT Gateway, ALB 2개, ECS, RDS 2개
 
+전체 진행 순서와 비용 발생 시점은 [`DEPLOYMENT_CHECKLIST.md`](DEPLOYMENT_CHECKLIST.md)를 먼저 확인한다.
+로컬 이미지 빌드는 다음 스크립트를 사용한다.
+
+```powershell
+.\scripts\Build-Images.ps1 -Tag "20260919-01"
+```
+
+AWS 인증과 도구 상태는 리소스를 생성하기 전에 검사한다.
+
+```powershell
+.\scripts\Test-AwsPrerequisites.ps1 -Profile "queryecho-loadtest-new"
+```
+
+로컬 전용 `terraform.tfvars`에는 AWS 프로필과 배포 계정 ID를 함께 기록한다.
+Provider의 `allowed_account_ids`가 다른 계정에 대한 실수로 인한 배포를 거부한다.
+
 ## 1. 상태 버킷 생성
 
 ```powershell
@@ -84,6 +100,9 @@ Copy-Item terraform.tfvars.example terraform.tfvars
 `spring_desired_count`, `java_desired_count`, `collector_desired_count`를 0으로 두고 저장소부터 만든다.
 이미지를 Push한 다음 1로 올려 다시 적용한다.
 
+세 이미지는 모두 첫 적용에서 생성된 전용 ECR 저장소에 Push한다. 태그가 변경 불가능하도록 설정되어 있으므로
+`latest` 대신 Git 커밋 SHA처럼 매번 고유한 태그를 사용한다.
+
 ## 3. 배포
 
 ```powershell
@@ -103,11 +122,35 @@ pip install -r ..\..\..\runner\requirements.txt
 
 python ..\..\..\runner\run_test.py `
   --function-name <terraform output lambda_function_name> `
+  --profile queryecho-loadtest-new `
   --scenario ..\..\..\scenarios\transaction.json `
   --workers 10
 ```
 
 각 작업자는 결과를 S3에 저장한다. 실행 전 요청 1건으로 SQL 실행과 Collector 저장을 검증한 뒤 동시성을 단계적으로 높인다.
+
+시나리오의 `requestIntervalMs`는 각 실행 레인의 요청 시작 간격을 제한한다. 현재 시나리오는
+`requestIntervalMs: 1000`이므로 레인 하나가 초당 최대 1개 요청을 시작한다. 따라서 일반 시나리오의
+대략적인 요청 속도 상한은 `workers × concurrency` RPS이며, 실제 처리량은 응답시간에 따라 더 낮을 수 있다.
+
+첫 검증은 30초, 동시성 1인 smoke 시나리오로 시작한다.
+
+```powershell
+python runner\run_test.py `
+  --function-name <terraform output lambda_function_name> `
+  --profile queryecho-loadtest-new `
+  --scenario scenarios\smoke-spring.json `
+  --workers 1
+
+python runner\run_test.py `
+  --function-name <terraform output lambda_function_name> `
+  --profile queryecho-loadtest-new `
+  --scenario scenarios\smoke-java.json `
+  --workers 1
+```
+
+smoke 결과와 QueryEcho 수집 결과가 일치하면 `java-standalone.json`,
+`java-transaction.json`, `java-mixed.json` 또는 기존 Spring 시나리오의 작업자 수를 단계적으로 높인다.
 
 ## 안전 원칙
 
@@ -117,4 +160,3 @@ python ..\..\..\runner\run_test.py `
 - 비밀번호와 수집 API 키는 Secrets Manager에 저장한다.
 - 상태 파일에도 민감한 메타데이터가 포함될 수 있으므로 상태 버킷 접근을 제한한다.
 - 테스트가 끝나면 `terraform destroy`로 비용 발생 리소스를 제거한다.
-

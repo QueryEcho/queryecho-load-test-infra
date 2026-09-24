@@ -83,6 +83,24 @@ resource "aws_iam_role" "task" {
   assume_role_policy = data.aws_iam_policy_document.ecs_assume.json
 }
 
+data "aws_iam_policy_document" "ecs_exec" {
+  statement {
+    actions = [
+      "ssmmessages:CreateControlChannel",
+      "ssmmessages:CreateDataChannel",
+      "ssmmessages:OpenControlChannel",
+      "ssmmessages:OpenDataChannel"
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role_policy" "ecs_exec" {
+  name   = "allow-ecs-exec-channels"
+  role   = aws_iam_role.task.id
+  policy = data.aws_iam_policy_document.ecs_exec.json
+}
+
 resource "aws_lb" "targets" {
   name               = "${substr(var.name_prefix, 0, 20)}-targets"
   internal           = true
@@ -108,7 +126,7 @@ resource "aws_lb_target_group" "spring" {
   deregistration_delay = 10
 
   health_check {
-    path                = "/"
+    path                = "/health"
     matcher             = "200-399"
     interval            = 15
     timeout             = 5
@@ -255,7 +273,7 @@ resource "aws_ecs_task_definition" "java" {
     essential    = true
     portMappings = [{ containerPort = 8080, protocol = "tcp" }]
     environment = [
-      { name = "SERVER_PORT", value = "8080" },
+      { name = "APP_PORT", value = "8080" },
       { name = "DB_URL", value = "jdbc:mysql://${var.mysql_host}:${var.mysql_port}/${var.mysql_database}?useSSL=false&allowPublicKeyRetrieval=true" },
       { name = "DB_USERNAME", value = var.mysql_username },
       { name = "QUERYECHO_COLLECTOR_URL", value = local.collector_url },
@@ -292,7 +310,7 @@ resource "aws_ecs_task_definition" "collector" {
     essential    = true
     portMappings = [{ containerPort = 8080, protocol = "tcp" }]
     environment = [
-      { name = "QUERYECHO_DB_URL", value = "jdbc:postgresql://${var.postgres_host}:${var.postgres_port}/${var.postgres_database}" },
+      { name = "QUERYECHO_DB_URL", value = "jdbc:postgresql://${var.postgres_host}:${var.postgres_port}/${var.postgres_database}?reWriteBatchedInserts=true" },
       { name = "QUERYECHO_DB_USERNAME", value = var.postgres_username },
       { name = "QUERYECHO_DEMO_ENABLED", value = "false" },
       { name = "QUERYECHO_SDK_ENABLED", value = "false" }

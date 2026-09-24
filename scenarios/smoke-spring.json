@@ -1,11 +1,11 @@
 {
   "target": "spring",
-  "concurrency": 5,
+  "concurrency": 1,
   "requestIntervalMs": 1000,
-  "durationSeconds": 180,
+  "durationSeconds": 30,
   "requests": [
     { "method": "GET", "path": "/api/load/standalone", "weight": 6, "timeoutSeconds": 10 },
     { "method": "POST", "path": "/api/load/transaction", "body": { "itemCount": 3 }, "weight": 3, "timeoutSeconds": 10 },
-    { "method": "POST", "path": "/api/load/rollback", "body": { "reason": "load-test" }, "weight": 1, "timeoutSeconds": 10 }
+    { "method": "POST", "path": "/api/load/rollback", "body": { "itemCount": 3 }, "weight": 1, "timeoutSeconds": 10 }
   ]
 }

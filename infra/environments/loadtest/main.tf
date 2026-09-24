@@ -38,7 +38,7 @@ module "applications" {
 
   spring_image    = "${module.registry.repository_urls["spring-target"]}:${var.spring_image_tag}"
   java_image      = "${module.registry.repository_urls["java-target"]}:${var.java_image_tag}"
-  collector_image = var.collector_image
+  collector_image = "${module.registry.repository_urls["collector"]}:${var.collector_image_tag}"
 
   spring_desired_count    = var.spring_desired_count
   java_desired_count      = var.java_desired_count
@@ -82,6 +82,7 @@ module "load_generator" {
 module "observability" {
   source = "../../modules/observability"
 
+  aws_region           = var.aws_region
   name_prefix          = local.name_prefix
   ecs_cluster_name     = module.applications.cluster_name
   service_names        = module.applications.service_names
@@ -89,4 +90,3 @@ module "observability" {
   postgres_identifier  = module.databases.postgres_identifier
   lambda_function_name = module.load_generator.lambda_function_name
 }
-

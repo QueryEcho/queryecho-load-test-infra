@@ -1,0 +1,159 @@
+<mxfile host="app.diagrams.net" modified="2026-09-18T10:00:00.000Z" agent="Codex" version="24.7.17" type="device">
+  <diagram id="queryecho-loadtest" name="QueryEcho Load Test Architecture">
+    <mxGraphModel dx="1600" dy="1050" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1050" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title" value="QueryEcho SDK 동시 부하 테스트 아키텍처" style="text;html=1;align=left;verticalAlign=middle;fontSize=26;fontStyle=1;fontColor=#1F2937;" vertex="1" parent="1">
+          <mxGeometry x="30" y="20" width="850" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="subtitle" value="AWS Account · ap-northeast-2 (서울) · 운영 환경과 분리된 loadtest 전용 환경" style="text;html=1;align=left;verticalAlign=middle;fontSize=13;fontColor=#6B7280;" vertex="1" parent="1">
+          <mxGeometry x="32" y="60" width="850" height="25" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="external" value="로컬 / GitHub" style="swimlane;html=1;rounded=1;startSize=38;horizontal=1;fontStyle=1;fontSize=15;fillColor=#F8FAFC;strokeColor=#94A3B8;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="110" width="245" height="825" as="geometry"/>
+        </mxCell>
+        <mxCell id="aws" value="AWS 계정" style="swimlane;html=1;rounded=1;startSize=42;horizontal=1;fontStyle=1;fontSize=17;fillColor=#FFF7ED;strokeColor=#F59E0B;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="290" y="90" width="1280" height="890" as="geometry"/>
+        </mxCell>
+        <mxCell id="vpc" value="VPC 10.20.0.0/16" style="swimlane;html=1;rounded=1;startSize=36;horizontal=1;fontStyle=1;fontSize=15;fillColor=#F0FDF4;strokeColor=#22C55E;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="430" y="225" width="1095" height="625" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="runner" value="&lt;b&gt;부하 테스트 Runner&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;runner/run_test.py&lt;br&gt;시나리오·동시 작업자 수 지정&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0284C7;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="55" y="180" width="175" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="developer" value="&lt;b&gt;개발자&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;Terraform plan/apply&lt;br&gt;테스트 시작·결과 분석&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDE9FE;strokeColor=#7C3AED;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="55" y="335" width="175" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="ci" value="&lt;b&gt;GitHub Actions / CI&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;앱 이미지 빌드&lt;br&gt;ECR Push&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3F4F6;strokeColor=#4B5563;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="55" y="500" width="175" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="dashboard-user" value="&lt;b&gt;QueryEcho 대시보드 사용자&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;VPN / SSM 포트포워딩&lt;br&gt;수집 결과 확인&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#D97706;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="55" y="665" width="175" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ecr" value="&lt;b&gt;Amazon ECR&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;Spring / Java / Collector 이미지&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=#EA580C;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="335" y="130" width="210" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="secrets" value="&lt;b&gt;Secrets Manager&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;DB 비밀번호 · 수집 API 키&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF2F8;strokeColor=#DB2777;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="605" y="130" width="210" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="cloudwatch" value="&lt;b&gt;CloudWatch&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;Logs · Metrics · Dashboard&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#7C3AED;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="875" y="130" width="210" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="s3" value="&lt;b&gt;Amazon S3&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;작업자별 부하 테스트 결과&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ECFDF5;strokeColor=#059669;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1145" y="130" width="210" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="terraform-state" value="&lt;b&gt;Terraform State S3&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;암호화 · use_lockfile&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ECFDF5;strokeColor=#059669;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1365" y="130" width="165" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="load-subnet" value="부하 발생 영역 (Private Subnets, Multi-AZ)" style="swimlane;html=1;rounded=1;startSize=30;horizontal=1;fontStyle=1;fillColor=#EFF6FF;strokeColor=#60A5FA;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="460" y="280" width="245" height="500" as="geometry"/>
+        </mxCell>
+        <mxCell id="app-subnet" value="Application 영역 (Private Subnets, Multi-AZ)" style="swimlane;html=1;rounded=1;startSize=30;horizontal=1;fontStyle=1;fillColor=#F8FAFC;strokeColor=#64748B;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="730" y="280" width="505" height="500" as="geometry"/>
+        </mxCell>
+        <mxCell id="db-subnet" value="Database Subnet Group (Multi-AZ 선택)" style="swimlane;html=1;rounded=1;startSize=30;horizontal=1;fontStyle=1;fillColor=#FFFBEB;strokeColor=#F59E0B;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="280" width="235" height="500" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="lambda" value="&lt;b&gt;Lambda Workers&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;동시 HTTP 요청 생성&lt;br&gt;standalone / commit / rollback&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=#F97316;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="495" y="370" width="175" height="105" as="geometry"/>
+        </mxCell>
+        <mxCell id="lambda-note" value="예약 동시성으로 단계적 증가&lt;br&gt;5 → 20 → 50 → 100+" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#6B7280;" vertex="1" parent="1">
+          <mxGeometry x="490" y="490" width="185" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="target-alb" value="&lt;b&gt;Internal Target ALB&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;/spring/* · /java/*&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0284C7;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="770" y="340" width="180" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="spring-app" value="&lt;b&gt;ECS Fargate: db-test&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;Spring SDK 0.2.0&lt;br&gt;port 8090&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="310" width="195" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="java-app" value="&lt;b&gt;ECS Fargate: java-load-test-app&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;순수 Java SDK 0.2.0&lt;br&gt;port 8091&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="425" width="195" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="collector-alb" value="&lt;b&gt;Internal Collector ALB&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;SDK ingest endpoint&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0284C7;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="770" y="600" width="180" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="collector" value="&lt;b&gt;ECS Fargate: QueryEcho&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;Collector + Dashboard&lt;br&gt;container port 8080&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#9333EA;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="585" width="195" height="110" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="mysql" value="&lt;b&gt;Amazon RDS MySQL&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;부하 대상 업무 DB&lt;br&gt;Spring·Java 공용&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#FEF3C7;strokeColor=#D97706;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1290" y="350" width="175" height="115" as="geometry"/>
+        </mxCell>
+        <mxCell id="postgres" value="&lt;b&gt;Amazon RDS PostgreSQL&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px&quot;&gt;QueryEcho 지표 저장소&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#FEF3C7;strokeColor=#D97706;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1290" y="600" width="175" height="115" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge-runner-lambda" value="① Invoke workers" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0284C7;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;" edge="1" parent="1" source="runner" target="lambda">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-lambda-alb" value="② HTTP 부하" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#F97316;strokeWidth=3;endArrow=block;endFill=1;fontSize=11;" edge="1" parent="1" source="lambda" target="target-alb">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-alb-spring" value="/spring/*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0284C7;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;" edge="1" parent="1" source="target-alb" target="spring-app">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-alb-java" value="/java/*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0284C7;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;" edge="1" parent="1" source="target-alb" target="java-app">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-spring-mysql" value="③ JDBC SQL" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#16A34A;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;" edge="1" parent="1" source="spring-app" target="mysql">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-java-mysql" value="③ JDBC SQL" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#16A34A;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;" edge="1" parent="1" source="java-app" target="mysql">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-spring-collector-alb" value="④ SDK metrics (HTTP)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#9333EA;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;" edge="1" parent="1" source="spring-app" target="collector-alb">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-java-collector-alb" value="④ SDK metrics (HTTP)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#9333EA;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;" edge="1" parent="1" source="java-app" target="collector-alb">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-collector-alb-app" value="수집 API" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#9333EA;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;" edge="1" parent="1" source="collector-alb" target="collector">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-collector-pg" value="⑤ 지표 저장" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#9333EA;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;" edge="1" parent="1" source="collector" target="postgres">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-lambda-s3" value="⑥ 결과 JSON" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#059669;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;" edge="1" parent="1" source="lambda" target="s3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-ci-ecr" value="Docker Push" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#4B5563;strokeWidth=2;endArrow=block;endFill=1;fontSize=11;" edge="1" parent="1" source="ci" target="ecr">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-ecr-spring" value="Image Pull" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;strokeColor=#64748B;endArrow=block;endFill=1;fontSize=10;" edge="1" parent="1" source="ecr" target="spring-app">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-ecr-java" value="Image Pull" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;strokeColor=#64748B;endArrow=block;endFill=1;fontSize=10;" edge="1" parent="1" source="ecr" target="java-app">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-ecr-collector" value="Image Pull" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;strokeColor=#64748B;endArrow=block;endFill=1;fontSize=10;" edge="1" parent="1" source="ecr" target="collector">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-secrets-apps" value="환경 변수 주입" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;strokeColor=#DB2777;endArrow=block;endFill=1;fontSize=10;" edge="1" parent="1" source="secrets" target="java-app">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-cloudwatch" value="로그·메트릭" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;strokeColor=#7C3AED;endArrow=block;endFill=1;fontSize=10;" edge="1" parent="1" source="collector" target="cloudwatch">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-dashboard" value="사설 접근" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;strokeColor=#D97706;endArrow=block;endFill=1;fontSize=10;" edge="1" parent="1" source="dashboard-user" target="collector-alb">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge-developer-state" value="Terraform state" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;strokeColor=#059669;endArrow=block;endFill=1;fontSize=10;" edge="1" parent="1" source="developer" target="terraform-state">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend" value="&lt;b&gt;핵심 검증 포인트&lt;/b&gt;　① 요청 성공률·P95/P99　② MySQL 커밋/롤백 정확성　③ SDK 이벤트 누락률　④ Collector 처리량·지연　⑤ 앱/Collector CPU·메모리" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#CBD5E1;fontSize=12;align=left;spacingLeft=14;" vertex="1" parent="1">
+          <mxGeometry x="430" y="875" width="1095" height="65" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

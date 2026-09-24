@@ -27,14 +27,15 @@ def main():
     parser.add_argument("--scenario", required=True)
     parser.add_argument("--workers", type=int, default=1)
     parser.add_argument("--region", default="ap-northeast-2")
+    parser.add_argument("--profile", default=None)
     args = parser.parse_args()
 
     scenario = json.loads(Path(args.scenario).read_text(encoding="utf-8"))
     run_id = scenario.get("runId") or f"{scenario['target']}-{uuid.uuid4()}"
     start_at_ms = int((time.time() + 10) * 1000)
-    client = boto3.client(
+    session = boto3.Session(profile_name=args.profile, region_name=args.region)
+    client = session.client(
         "lambda",
-        region_name=args.region,
         config=Config(read_timeout=900, connect_timeout=10, retries={"max_attempts": 2}),
     )
 
@@ -53,6 +54,9 @@ def main():
     output = {
         "runId": run_id,
         "workers": args.workers,
+        "concurrencyPerWorker": int(scenario.get("concurrency", 1)),
+        "requestIntervalMs": int(scenario.get("requestIntervalMs", 0)),
+        "durationSeconds": int(scenario.get("durationSeconds", 60)),
         "requests": total_requests,
         "successes": total_successes,
         "failures": total_failures,
@@ -63,4 +67,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

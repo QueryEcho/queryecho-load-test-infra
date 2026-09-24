@@ -1,5 +1,5 @@
 locals {
-  repositories = toset(["spring-target", "java-target"])
+  repositories = toset(["spring-target", "java-target", "collector"])
 }
 
 resource "aws_ecr_repository" "this" {
@@ -34,4 +34,3 @@ resource "aws_ecr_lifecycle_policy" "this" {
     }]
   })
 }
-
