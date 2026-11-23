@@ -60,7 +60,7 @@ GET /api/v1/metrics/collection-health
 ### 특정 애플리케이션만 조회
 
 ```http
-GET /api/v1/metrics/collection-health?environment=loadtest&appName=db-test
+GET /api/v1/metrics/collection-health?environment=loadtest&appName=spring-load-target
 ```
 
 `environment`, `appName`은 선택 조건이다. 값을 생략하면 Collector가 알고 있는 전체 인스턴스를 합산한다.
@@ -260,7 +260,7 @@ aws ecs execute-command \
 특정 앱만 보고 싶다면 URL을 다음처럼 바꾼다.
 
 ```text
-http://127.0.0.1:8080/api/v1/metrics/collection-health?environment=loadtest&appName=db-test
+http://127.0.0.1:8080/api/v1/metrics/collection-health?environment=loadtest&appName=spring-load-target
 ```
 
 ## 8. 부하 테스트에서 사용하는 방법
@@ -283,7 +283,7 @@ http://127.0.0.1:8080/api/v1/metrics/collection-health?environment=loadtest&appN
 Spring 5 RPS 예시다.
 
 ```bash
-cd /mnt/c/springdb/queryecho-load-test-infra
+# 이 저장소의 루트에서 실행
 source .venv/bin/activate
 
 python runner/run_test.py \

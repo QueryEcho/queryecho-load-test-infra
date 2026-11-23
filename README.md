@@ -12,7 +12,7 @@ java-load-test-app/              순수 Java 부하 대상 애플리케이션
 queryecho-load-test-infra/       이 저장소: AWS 인프라 + Lambda 부하 발생기
 ```
 
-애플리케이션 저장소의 CI가 Docker 이미지를 ECR에 올리고, 이 저장소는 이미지 태그를 입력받아 배포한다.
+이 저장소의 스크립트로 대상 앱과 Collector 이미지를 빌드하고 ECR에 올린다. Terraform에는 올린 이미지의 태그를 전달한다.
 Terraform은 이미지를 빌드하지 않으며 `terraform apply`만으로 부하 테스트를 시작하지 않는다.
 
 ## 구성
@@ -55,6 +55,7 @@ scenarios/                       재현 가능한 테스트 입력
 - 비용이 발생하는 리소스: NAT Gateway, ALB 2개, ECS, RDS 2개
 
 전체 진행 순서와 비용 발생 시점은 [`DEPLOYMENT_CHECKLIST.md`](DEPLOYMENT_CHECKLIST.md)를 먼저 확인한다.
+구성도는 [아키텍처 문서](ARCHITECTURE.md)와 [draw.io 원본](docs/queryecho-load-test-architecture.drawio)에서 확인할 수 있다.
 로컬 이미지 빌드는 다음 스크립트를 사용한다.
 
 ```powershell
@@ -115,16 +116,14 @@ terraform apply loadtest.tfplan
 
 ## 4. 부하 실행
 
+아래 명령은 저장소 루트에서 실행한다. 3단계에서 사용한 `infra/environments/loadtest`에 있다면 `cd ../../..`으로 돌아온다.
+
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install -r ..\..\..\runner\requirements.txt
-
-python ..\..\..\runner\run_test.py `
-  --function-name <terraform output lambda_function_name> `
-  --profile queryecho-loadtest-new `
-  --scenario ..\..\..\scenarios\transaction.json `
-  --workers 10
+python -m pip install -r runner/requirements.txt
+$lambdaFunction = terraform -chdir=infra/environments/loadtest output -raw lambda_function_name
+$awsProfile = "queryecho-loadtest-new" # 로컬 AWS CLI 프로필 이름으로 변경
 ```
 
 각 작업자는 결과를 S3에 저장한다. 실행 전 요청 1건으로 SQL 실행과 Collector 저장을 검증한 뒤 동시성을 단계적으로 높인다.
@@ -137,20 +136,21 @@ python ..\..\..\runner\run_test.py `
 
 ```powershell
 python runner\run_test.py `
-  --function-name <terraform output lambda_function_name> `
-  --profile queryecho-loadtest-new `
+  --function-name $lambdaFunction `
+  --profile $awsProfile `
   --scenario scenarios\smoke-spring.json `
   --workers 1
 
 python runner\run_test.py `
-  --function-name <terraform output lambda_function_name> `
-  --profile queryecho-loadtest-new `
+  --function-name $lambdaFunction `
+  --profile $awsProfile `
   --scenario scenarios\smoke-java.json `
   --workers 1
 ```
 
 smoke 결과와 QueryEcho 수집 결과가 일치하면 `java-standalone.json`,
 `java-transaction.json`, `java-mixed.json` 또는 기존 Spring 시나리오의 작업자 수를 단계적으로 높인다.
+[단계별 부하 테스트 계획](docs/STEP_LOAD_TEST_PLAN_KO.md)과 [Collector 지표 조회 가이드](docs/COLLECTOR_OBSERVABILITY_API_KO.md)를 참고한다.
 
 ## 안전 원칙
 
